@@ -68,45 +68,66 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun autoScroll(recyclerView: RecyclerView, userImages: List<Int>) {
-        val scrollSpeed: Long = 2000 // Time before switching to the next image
+        val scrollSpeed: Long = 60 // Time between each scroll (lower value = faster scrolling)
+        val smoothScrollDistance = 10 // Number of pixels to scroll each iteration
 
         val runnable = object : Runnable {
             override fun run() {
                 val itemCount = recyclerView.adapter?.itemCount ?: 0
 
-                // Check if we have items to scroll through
                 if (itemCount == 0) return
 
-                // Get the current view holder
-                val viewHolder =
-                    recyclerView.findViewHolderForAdapterPosition(currentItemIndex) as? UserAdapter.UserViewHolder
-                if (viewHolder != null) {
-                    // Perform cross-fade animation
-                    crossFade(viewHolder.profileImage, userImages[currentItemIndex])
-                }
-
-                // Update the current item index for the next scroll
-                currentItemIndex = (currentItemIndex + 1) % itemCount // Loop back to the start
-
-                // Post the next scroll after the animation completes
-                handler.postDelayed({
-                    // Smooth scroll to the next item
-                    recyclerView.smoothScrollToPosition(currentItemIndex)
-
-                    // Check for the last item and perform cross-fade
-                    val nextViewHolder =
-                        recyclerView.findViewHolderForAdapterPosition(currentItemIndex) as? UserAdapter.UserViewHolder
-                    if (nextViewHolder != null) {
-                        crossFade(nextViewHolder.profileImage, userImages[currentItemIndex])
-                    }
-
-                    // Repost the runnable to continue the cycle
-                    handler.postDelayed(this, scrollSpeed)
-                }, 500) // Adjust the delay to match the duration of your cross-fade animation
+                recyclerView.smoothScrollBy(0, smoothScrollDistance)
+                handler.postDelayed(this, scrollSpeed)
             }
         }
 
         handler.post(runnable)
     }
+
+
+    /*
+        private fun autoScroll(recyclerView: RecyclerView, userImages: List<Int>) {
+            val scrollSpeed: Long = 2000 // Time before switching to the next image
+
+            val runnable = object : Runnable {
+                override fun run() {
+                    val itemCount = recyclerView.adapter?.itemCount ?: 0
+
+                    // Check if we have items to scroll through
+                    if (itemCount == 0) return
+
+                    // Get the current view holder
+    //                val viewHolder =
+    //                    recyclerView.findViewHolderForAdapterPosition(currentItemIndex) as? UserAdapter.UserViewHolder
+    //                if (viewHolder != null) {
+    //                    // Perform cross-fade animation
+    //                    crossFade(viewHolder.profileImage, userImages[currentItemIndex])
+    //                }
+
+                    // Update the current item index for the next scroll
+                    currentItemIndex = (currentItemIndex + 1) % itemCount // Loop back to the start
+
+                    // Post the next scroll after the animation completes
+    //                handler.postDelayed({
+                    // Smooth scroll to the next item
+                    recyclerView.smoothScrollToPosition(currentItemIndex)
+
+    //                    // Check for the last item and perform cross-fade
+    //                    val nextViewHolder =
+    //                        recyclerView.findViewHolderForAdapterPosition(currentItemIndex) as? UserAdapter.UserViewHolder
+    //                    if (nextViewHolder != null) {
+    //                        crossFade(nextViewHolder.profileImage, userImages[currentItemIndex])
+    //                    }
+
+                    // Repost the runnable to continue the cycle
+                    handler.postDelayed(this, 100)
+    //                }, 50) // Adjust the delay to match the duration of your cross-fade animation
+                }
+            }
+
+            handler.post(runnable)
+        }
+    */
 
 }
